@@ -1,0 +1,33 @@
+{% extends 'base.html' %} 
+
+{% block head %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('static', filename='login-stylee.css') }}">
+{% endblock %}
+{% block title %}Login page{% endblock %}
+
+
+{% block content %}
+<main class="login-page">  <!-- Unique wrapper class -->
+  <div class="login-form-wrapper">
+    <h2 style="color: rgba(0, 0, 0, 0.778); display:flex;align-items: center; justify-content: center;">Login</h2>
+    <form method="POST">
+
+       {{ form.hidden_tag() }}
+
+       <!-- {{ form.username.label()}} -->
+       {{ form.username(class="login-input" ,placeholder="User Name") }}
+
+       <!-- {{ form.password.label() }} -->
+       {{ form.password(class="login-input" ,placeholder="Password") }}
+       <br>
+       <div class="checkbox mb-3" >
+          <h6 style="color: rgba(0, 0, 0, 0.777); display:flex;align-items: center; justify-content: center;">Do not have an account?</h6>
+          <a class="btn btn-sm btn-secondary" href="{{ url_for('register_page') }}" style="display: block;">Register</a>
+       </div>
+       {{ form.submit(class="login-btn",placeholder="Sign In")}}
+    </form>
+  </div>
+</main>
+
+{% endblock %}

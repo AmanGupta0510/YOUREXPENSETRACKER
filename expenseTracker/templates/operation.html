@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static',filename='operation-style.css') }}">
+{% endblock %}
+{% block title %}page{% endblock %}
+
+{% block content %}
+
+<section class="section-1-add-itmes">
+  <div class="text-container">
+    <h3>Add Items</h6>
+  </div>
+  <div class="section-outer-container" style="margin-top: 1rem;">
+    <form method="POST"  id = "expense-form" action="/api/add-expense">
+      {{ form.hidden_tag() }}
+     
+      {{ form.category(placeholder='Category',class="add-item-input",id="category") }}
+      {{ form.item(placeholder='Item Name',class="add-item-input",id="item_name") }}
+      {{ form.quantity(placeholder='Quantity',class="add-item-input",id="quantity") }}
+      {{ form.price(placeholder='Price',class="add-item-input" , id="price") }}
+
+      <br>
+      {{ form.save(class="btn-add-items") }}
+      <br>
+      {{ form.delete(class="btn-delete-items")}}
+
+    </form>
+  </div>
+</section>
+<table id="expense-table">
+  <thead>
+    <tr>
+     
+      <th>Category</th>
+      <th>Item Name</th>
+      <th>Quantity</th>
+      <th>Price</th>
+      <th>total</th>
+    </tr>
+  </thead>
+  <tbody id="expense-tbody">
+  </tbody>
+</table>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function(){
+    const form = document.getElementById('expense-form');
+    const tbody = document.getElementById('expense-tbody');
+  
+    // Helper to get token (from localStorage after login)
+    function getAuthToken() {
+      return localStorage.getItem('jwt_token');  // Or sessionStorage
+    }
+  
+    // Updated loadExpenses with token
+    async function loadExpenses(){
+      const token = getAuthToken();
+      if (!token) {
+        console.error('No auth token found. Redirect to login?');
+        return;
+      }
+      const response = await fetch('/api/expenses', {
+        headers: {
+          'Authorization': `Bearer ${token}`,  // Standard JWT format [web:10]
+          'Content-Type': 'application/json'
+        }
+      });
+      if (response.ok) {
+        const expenses = await response.json();
+        renderTable(expenses);
+      }
+    }
+  
+    loadExpenses();
+  
+    // Updated form submit with token
+    form.addEventListener('submit', async function(e){
+      e.preventDefault();
+  
+      const token = getAuthToken();
+      if (!token) {
+        console.error('No auth token. Login first.');
+        return;
+      }
+  
+      const category = document.getElementById('category').value;
+      const item_name = document.getElementById('item_name').value;
+      const quantity = parseFloat(document.getElementById('quantity').value);
+      const price = parseFloat(document.getElementById('price').value);
+  
+      const response = await fetch('/api/add-expense', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({category, item_name, quantity, price})
+      });
+      if (response.ok) {
+        const expenses = await response.json();
+        renderTable(expenses);
+        form.reset();
+      }
+    });
+  
+    // Fix renderTable bug: add 'expenses' param
+    function renderTable(expenses) {
+      tbody.innerHTML = '';
+      expenses.forEach(element => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${element.category}</td>
+          <td>${element.item_name}</td>
+          <td>${element.quantity}</td>
+          <td>${element.price}</td>
+          <td>${element.total}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+  });
+  
+</script>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block head %}
+{{ super() }}
+{% endblock %}
+
+{% block title %}
+Your Expenses
+{% endblock %}
+
+{% block content %}
+
+
+<section class="section-2-show-expense-table">
+
+    <div class="outer-table-container">
+
+        <table class="table">
+            <thead>
+              <tr>  <!-- ← ADD THIS ROW -->
+                <th style="color: white;" scope="col">Category</th>
+                <th style="color: white;" scope="col">Item Name</th>
+                <th style="color: white;" scope="col">Quantity</th>
+                <th style="color: white;" scope="col">Price</th>
+                <th style="color: white;" scope="col">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for et in expense_table %}
+              <tr>  <!-- ← ADD ROW FOR EACH ITEM -->
+                <td style="color: white;">{{ et.category_name }}</td>  <!-- Fixed name -->
+                <td style="color: white;">{{ et.item_name }}</td>
+                <td style="color: white;">{{ et.quantity }}</td>
+                <td style="color: white;">₹{{ et.price }}</td>  <!-- Added currency -->
+                <td style="color: white;">₹{{ et.total }}</td>
+              </tr>
+              {% else %}
+              <tr>
+                <td colspan="5" style="color: white; text-align: center;">No expenses yet!</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          
+
+
+    </div>
+</section>
+
+{% endblock %}

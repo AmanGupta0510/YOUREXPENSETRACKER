@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='home-style.css') }}">
+    <title>Home Page</title>
+</head>
+<body>
+    <div class="outer-container">
+
+        <div class="inner-container">
+            <div class="app-title">
+                <h1>Expense Tracker</h1>
+                <img src="{{ url_for('static', filename='images/expnse.png') }}" alt="">
+            </div>
+            <div class="app-desc">
+                <p>Your Daily Expense Tracker...</p>
+            </div>
+            <div class="butn">
+                <div class="transparent-btn">
+                    <a href="{{ url_for('login_page') }}">Get Started</a>
+                </div>
+                
+            </div>
+        </div>
+
+
+    </div>
+</body>
+</html>

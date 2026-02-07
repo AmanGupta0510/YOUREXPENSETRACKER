@@ -1,0 +1,75 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    background-color: #1f2c39;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.outer-container{
+    height: 100vh;
+    width: 100vw;
+    display: flex;           /* Add this */
+    justify-content: center; /* Add this */
+    /* align-items: flex-start; Add this */
+    padding-top: 100px; 
+
+}
+
+.app-title{
+    display: flex;
+    justify-content: center;
+    justify-items: center;
+    margin-bottom: 0.2rem;
+    /* border: 2px ; */
+    border-bottom: 3px solid #dedede;
+}
+.app-title img{
+    
+    height: 4.2rem;
+    width:5.2rem;
+    margin-top: 1.2rem;
+}
+h1 {
+    font-size: 5.2rem;
+    display: flex;
+    color: #d0d5da;
+    text-align: center;
+}
+.app-desc p{
+    color:#d0d5daaf ;
+}
+.butn{
+    padding: 4.5rem;
+    display: flex;
+    justify-content: center;
+    
+    
+
+}
+.butn a{
+    font-size: 1.3rem;
+    text-decoration: none;
+    color: #fbfbfbaf ;
+    background-color: transparent;
+}
+
+.transparent-btn {
+    background-color: transparent;
+    border: 2px solid #cccccc;  /* Blue border */
+    color: #3498db;             /* Blue text */
+    padding: 12px 24px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    outline: none;
+}
+.transparent-btn:hover {
+    background-color: rgba(52, 152, 219, 0.6);  /* Slight tint on hover */
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(52, 152, 219, 0.2);
+}
+.transparent-btn:active {
+    transform: translateY(0);
+}
