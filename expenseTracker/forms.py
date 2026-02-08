@@ -44,7 +44,7 @@ class AddItems(FlaskForm):
                                ('beverage','Beverages')
                             ]
                         )
-    item = StringField(label='Item',validators=[DataRequired(),Length(min=4,max=10)])
+    item = StringField(label='Item',validators=[DataRequired(),Length(min=4,max=30)])
     quantity = IntegerField(label='Quantity',validators=[DataRequired()])
     price = DecimalField(label='Price',validators=[DataRequired()])
 

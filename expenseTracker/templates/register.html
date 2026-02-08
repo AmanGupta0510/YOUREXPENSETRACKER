@@ -9,7 +9,7 @@
 <main class="login-page">  <!-- Unique wrapper class -->
     <div class="login-form-wrapper">
       <h2 style="color: rgba(0, 0, 0, 0.778); display:flex;align-items: center; justify-content: center;">Register</h2>
-      <form method="POST">
+      <form method="POST"  id="registrationForm">
   
          {{ form.hidden_tag() }}
   
@@ -28,4 +28,47 @@
       </form>
     </div>
 </main>
-{% endblock %}
+
+
+<script>
+   const form = document.getElementById('registrationForm');
+   console.log('Form found:');
+   form.addEventListener('submit', async function(e) {
+       e.preventDefault();
+       const formData = new FormData(this);
+       
+      
+           // 1. Register first
+           const registerRes = await fetch('/register', {
+               method: "POST",
+               body: formData 
+           }); 
+           
+           if (!registerRes.ok) {
+               const error = await registerRes.json();
+               alert('Registration failed: ' + error.error);
+               return;
+           }
+           
+           // 2. Auto-login
+           const loginRes = await fetch('/api/login', {
+               method: "POST",
+               headers: {'Content-Type': 'application/json'},
+               body: JSON.stringify({
+                   username: formData.get('username'),
+                   password: formData.get('password1')
+               })
+           });
+           
+           if (loginRes.ok) {
+               const loginData = await loginRes.json();
+               localStorage.setItem('accessToken', loginData.accessToken);  // ✅ FIXED
+               window.location.href = '/add-expense';
+           } else {
+               alert('Login failed after registration');
+           }
+      
+   });
+   </script>
+
+{% endblock %}   

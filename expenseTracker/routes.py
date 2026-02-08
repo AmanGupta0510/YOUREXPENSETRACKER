@@ -14,9 +14,12 @@ from flask_login import current_user, login_required, login_user,logout_user
 def home_page():
     return render_template('home.html')  
 
-@app.route('/register',methods=["GET","POST"])
+@app.route('/register',methods=["GET"])
+def get_register():
+    form = RegisterForm()
+    return render_template('register.html',form=form)
+@app.route('/register',methods=["POST"])
 def register_page():
-    
     form = RegisterForm()
     if form.validate_on_submit():
         user_to_create = User(username=form.username.data,
@@ -27,11 +30,11 @@ def register_page():
         db.session.commit()
         login_user(user_to_create)
         flash(f"Account created successfully! You are now logged in as {user_to_create.username}",category='success')
-        return redirect(url_for('operation_page'))
+        return jsonify({'success': True})
     if form.errors!={}:
         for err_msg in form.errors.values():
             flash(f"There was an error while creating user:{err_msg}",category='danger')
-    return  render_template('register.html',form=form)
+    return jsonify({'error': 'Invalid form'}), 400
     
 
 
@@ -66,7 +69,9 @@ def api_login():
     
     if attempted_user and attempted_user.passwordChecker(attemptedPassword=data.get('password')):
         login_user(attempted_user)
-        token = create_access_token(identity=attempted_user.id)
+        
+        
+        token = create_access_token(identity=str(attempted_user.id))
         print(f"Login SUCCESS for {attempted_user.username}")  # Debug
         return jsonify({"accessToken": token})
     else:
@@ -78,7 +83,7 @@ def api_login():
 def logout_page():
     logout_user()
     flash(f'You have been logged out!',category = 'info')
-    return render_template('home.html')
+    return redirect(url_for('home_page'))
 
 @app.route('/add-expense')
 @cross_origin()
@@ -87,8 +92,9 @@ def operation_page():
     return render_template('operation.html',form=form)     
         
 @app.route('/api/add-expense', methods=['POST', 'OPTIONS'])
-@cross_origin()
 @jwt_required()
+@cross_origin()
+
 def add_expense():
 
     if request.method == 'OPTIONS':
@@ -96,7 +102,7 @@ def add_expense():
     
     data = request.get_json()
     print(data)
-    items = Expense.query.filter_by(and_(item_name=data.get('item'),price=data.get('price'))).first()
+    items = Expense.query.filter_by(item_name=data.get('item'),price=data.get('price')).first()
     quantity = int(data.get('quantity') or 0)
     price = int(data.get('price') or 0)
     if items:
@@ -115,17 +121,18 @@ def add_expense():
         db.session.add(items)
         db.session.commit()
     current_user_id = get_jwt_identity()    
-    curr_expenses = db.session.query(Expense).filter(Expense.user_id==current_user_id).all()  
+    curr_expenses = db.session.query(Expense).filter(Expense.user_id==int(current_user_id)).all()  
     return jsonify( [ ex.to_dict() for ex in curr_expenses ] )
 
 @app.route('/api/expenses', methods=['GET', 'OPTIONS'])
 @jwt_required()
 @cross_origin()
 def get_expense():
+    
     if request.method == 'OPTIONS':
         return '', 200
     current_user_id = get_jwt_identity()
-    expected_expense = db.session.query(Expense).filter(Expense.user_id==current_user_id).all()
+    expected_expense = db.session.query(Expense).filter(Expense.user_id==int(current_user_id)).all()
     return jsonify([expense.to_dict() for expense in expected_expense])
 
 
