@@ -48,10 +48,40 @@
   document.addEventListener('DOMContentLoaded', function(){
     const form = document.getElementById('expense-form');
     const tbody = document.getElementById('expense-tbody');
-  
+    const loginform = document.getElementById('loginForm');
+    
+    loginform.addEventListener('submit',async function(event){
+      event.preventDefault();
+      const username = document.getElementById('usernameInput').value;
+      const password = document.getElementById('passwordInput').value;
+      
+      try{
+        const response = await fetch('/api/login',{
+          method:"POST",
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({username:username,password:password})
+        });
+        const data = await response.json();
+        if(response.ok && data.accessToken){
+          localStorage.setItem('accessToken',data.accessToken);
+          console.log('Login SucessFull!')
+          window.location.href = '/add-expense';
+        }
+        else{
+          console.error('Login Failed',data.error);
+        }
+
+      }catch(error){
+        console.error(error.message);
+      }
+
+    });   
+    
+      
     // Helper to get token (from localStorage after login)
     function getAuthToken() {
-      return localStorage.getItem('jwt_token');  // Or sessionStorage
+      
+      return localStorage.getItem('accessToken');  // Or sessionStorage
     }
   
     // Updated loadExpenses with token
@@ -96,7 +126,10 @@
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({category, item_name, quantity, price})
+        body: JSON.stringify({category:category, 
+          item :item_name, 
+          quantity:quantity,
+          price: price})
       });
       if (response.ok) {
         const expenses = await response.json();

@@ -8,26 +8,78 @@
 
 
 {% block content %}
-<main class="login-page">  <!-- Unique wrapper class -->
+<main class="login-page">
   <div class="login-form-wrapper">
     <h2 style="color: rgba(0, 0, 0, 0.778); display:flex;align-items: center; justify-content: center;">Login</h2>
-    <form method="POST">
-
-       {{ form.hidden_tag() }}
-
-       <!-- {{ form.username.label()}} -->
-       {{ form.username(class="login-input" ,placeholder="User Name") }}
-
-       <!-- {{ form.password.label() }} -->
-       {{ form.password(class="login-input" ,placeholder="Password") }}
-       <br>
-       <div class="checkbox mb-3" >
-          <h6 style="color: rgba(0, 0, 0, 0.777); display:flex;align-items: center; justify-content: center;">Do not have an account?</h6>
-          <a class="btn btn-sm btn-secondary" href="{{ url_for('register_page') }}" style="display: block;">Register</a>
-       </div>
-       {{ form.submit(class="login-btn",placeholder="Sign In")}}
+    
+    <!-- NO method, NO hidden_tag, NO form.submit -->
+    <form id="loginForm">
+      <input class="login-input" 
+             id="usernameInput" 
+             placeholder="User Name" 
+             autocomplete="username" 
+             required>
+      
+      <input class="login-input" 
+             id="passwordInput" 
+             type="password"
+             placeholder="Password" 
+             autocomplete="current-password" 
+             required>
+      
+      <br>
+      <div class="checkbox mb-3">
+        <h6 style="color: rgba(0, 0, 0, 0.777); display:flex;align-items: center; justify-content: center;">
+          Do not have an account?
+        </h6>
+        <a class="btn btn-sm btn-secondary" href="{{ url_for('register_page') }}" style="display: block;">
+          Register
+        </a>
+      </div>
+      
+      <!-- Plain button, JS handles submit -->
+      <button type="submit" class="login-btn">Sign In</button>
     </form>
+    
+    <div id="message" style="color: red;"></div>
   </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.getElementById('loginForm');
+      const message = document.getElementById('message');
+      
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();  // STOP HTML form submission
+        console.log('🔥 JS Form intercepted!');
+        
+        const username = document.getElementById('usernameInput').value;
+        const password = document.getElementById('passwordInput').value;
+        
+        try {
+          const response = await fetch('/api/login', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({username, password})
+          });
+          
+          console.log('Status:', response.status);
+          const data = await response.json();
+          console.log('Data:', data);
+          
+          if(response.ok && data.accessToken) {
+            localStorage.setItem('accessToken', data.accessToken);
+            window.location.href = '/add-expense';
+          } else {
+            message.textContent = data.error || 'Login failed';
+          }
+        } catch(error) {
+          console.error('Error:', error);
+          message.textContent = 'Network error';
+        }
+      });
+    });
+  </script>
 </main>
 
 {% endblock %}
