@@ -12,7 +12,7 @@ class User(db.Model,UserMixin):
     username = db.Column(db.String(length=30),nullable=False)
     password_hash = db.Column(db.String(length=128),nullable=False)
     email_address = db.Column(db.String(length=50),nullable=False)
-    
+   
     expenses = db.relationship("Expense",back_populates='user',lazy=True)
     
     # lazy=True = "Load related data only when accessed" (default, fast).
@@ -41,7 +41,7 @@ class Expense(db.Model):
     id = db.Column(db.Integer(),primary_key = True,nullable=False)
     category_name = db.Column(db.String(length=30),nullable=False)
     item_name = db.Column(db.String(length=30),nullable=False)
-    quantity = db.Column(db.Integer(),nullable=False , default=0)
+    quantity = db.Column(db.Float(),nullable=False , default=0)
     price = db.Column(db.Float(),nullable=False,default=0)
     total = db.Column(db.Float(),nullable=False,default=0)
     user_id = db.Column(db.Integer(),db.ForeignKey('users.id'))

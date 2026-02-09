@@ -29,20 +29,25 @@
     </form>
   </div>
 </section>
-<table id="expense-table">
-  <thead>
-    <tr>
+<section class="section-2-add-itmes"> 
+<table id="expense-table" class="table">
+  <thead class="t-head">
+    <tr class="t-row">
      
-      <th>Category</th>
-      <th>Item Name</th>
-      <th>Quantity</th>
-      <th>Price</th>
-      <th>total</th>
+      <th scope="col" style="color: antiquewhite;">Category</th>
+      <th scope="col" style="color: antiquewhite;">Item Name</th>
+      <th scope="col" style="color: antiquewhite;">Quantity</th>
+      <th scope="col" style="color: antiquewhite;">Price</th>
+      <th scope="col" style="color: antiquewhite;">total</th>
     </tr>
   </thead>
-  <tbody id="expense-tbody">
+  <tbody id="expense-tbody" class="t-body">
   </tbody>
 </table>
+<div class="total-row mt-3 p-3 bg-primary text-white rounded">
+  <h4>Total Expenses: <span id="totalAmount">₹0</span></h4>
+</div>
+</section>
 
 <script>
   document.addEventListener('DOMContentLoaded', function(){
@@ -75,9 +80,9 @@
         }
       });
       if (response.ok) {
-        const expenses = await response.json();
-        console.log("expenses",expenses)
-        renderTable(expenses);
+        const data = await response.json();
+        console.log("expenses",data)
+        renderTable(data.expenses,data.total);
       }
     }
   
@@ -89,7 +94,7 @@
   
       const token = getAuthToken();
       if (!token) {
-        
+
         console.error('No auth token. Login first.');
         return;
       }
@@ -111,15 +116,15 @@
           price: price})
       });
       if (response.ok) {
-        const expenses = await response.json();
+        const data = await response.json();
         
-        renderTable(expenses);
+        renderTable(data.expenses,data.total);
         form.reset();
       }
     });
   
     // Fix renderTable bug: add 'expenses' param
-    function renderTable(expenses) {
+    function renderTable(expenses,total) {
       tbody.innerHTML = '';
       expenses.forEach(element => {
         const row = document.createElement('tr');
@@ -133,6 +138,8 @@
         `;
         tbody.appendChild(row);
       });
+      document.getElementById('totalAmount').textContent = `₹${total}`;
+
     }
   });
   

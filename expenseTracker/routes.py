@@ -102,12 +102,15 @@ def add_expense():
     
     data = request.get_json()
     print(data)
-    items = Expense.query.filter_by(item_name=data.get('item'),price=data.get('price')).first()
+    Already_items = Expense.query.filter_by(item_name=data.get('item'),price=data.get('price')).first()
     quantity = int(data.get('quantity') or 0)
     price = int(data.get('price') or 0)
-    if items:
-        items.quantity+=quantity
-        items.total = price*items.quantity
+    if Already_items:
+        print(Already_items.item_name)
+        Already_items.quantity+=quantity
+        Already_items.total = price*Already_items.quantity
+        db.session.add(Already_items)
+        db.session.commit()
     else:
         items = Expense(
                             category_name=data.get('category'),
@@ -122,7 +125,12 @@ def add_expense():
         db.session.commit()
     current_user_id = get_jwt_identity()    
     curr_expenses = db.session.query(Expense).filter(Expense.user_id==int(current_user_id)).all()  
-    return jsonify( [ ex.to_dict() for ex in curr_expenses ] )
+    total = 0
+    for exp in curr_expenses:
+        print(exp.total)
+        total+=exp.total
+     
+    return jsonify({"expenses":[expense.to_dict() for expense in curr_expenses],"total":total})
 
 @app.route('/api/expenses', methods=['GET', 'OPTIONS'])
 @jwt_required()
@@ -133,7 +141,12 @@ def get_expense():
         return '', 200
     current_user_id = get_jwt_identity()
     expected_expense = db.session.query(Expense).filter(Expense.user_id==int(current_user_id)).all()
-    return jsonify([expense.to_dict() for expense in expected_expense])
+    total = 0
+    for exp in expected_expense:
+        print(exp.total)
+        total+=exp.total
+       
+    return jsonify({"expenses":[expense.to_dict() for expense in expected_expense],"total":total})
 
 
     
